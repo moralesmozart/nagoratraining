@@ -40,13 +40,32 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
   const subtitleInputRef = useRef<HTMLInputElement>(null);
   const exerciseInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const colorPickerRef = useRef<HTMLDivElement>(null);
+  const titleJustActivatedRef = useRef(false);
 
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
-      titleInputRef.current.focus();
-      titleInputRef.current.select();
+      // Usar requestAnimationFrame para asegurar que el DOM esté listo
+      requestAnimationFrame(() => {
+        if (titleInputRef.current) {
+          titleInputRef.current.focus();
+          // Solo seleccionar el texto cuando se activa la edición por primera vez
+          if (titleJustActivatedRef.current) {
+            if (title && title.length > 0) {
+              titleInputRef.current.select();
+            } else {
+              const length = titleInputRef.current.value.length;
+              titleInputRef.current.setSelectionRange(length, length);
+            }
+            titleJustActivatedRef.current = false;
+          } else {
+            // Si ya estaba editando, mantener el cursor al final
+            const length = titleInputRef.current.value.length;
+            titleInputRef.current.setSelectionRange(length, length);
+          }
+        }
+      });
     }
-  }, [isEditingTitle]);
+  }, [isEditingTitle, title]);
 
   useEffect(() => {
     if (isEditingSubtitle && subtitleInputRef.current) {
@@ -65,29 +84,37 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
   // Cerrar el color picker cuando se hace clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target as Node)) {
-        const target = event.target as HTMLElement;
-        // No cerrar si se hace clic en el trigger del color picker
-        if (!target.closest('.color-picker-trigger')) {
-          setShowColorPicker(false);
-        }
+      const target = event.target as HTMLElement;
+      // No cerrar si se hace clic en el trigger del color picker o dentro del popup
+      if (colorPickerRef.current && !colorPickerRef.current.contains(target) && !target.closest('.color-picker-trigger')) {
+        setShowColorPicker(false);
       }
     };
 
     if (showColorPicker) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+      // Usar un pequeño delay para evitar que se cierre inmediatamente al abrir
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 100);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
   }, [showColorPicker]);
 
   const handleTitleClick = () => {
+    titleJustActivatedRef.current = true;
     setIsEditingTitle(true);
   };
 
-  const handleTitleBlur = () => {
+  const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // No cerrar si el focus se movió al color picker
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (relatedTarget && (relatedTarget.closest('.color-picker-popup') || relatedTarget.closest('.color-picker-trigger'))) {
+      return;
+    }
     setIsEditingTitle(false);
   };
 
@@ -146,7 +173,12 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
               className="color-picker-trigger" 
               onClick={(e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 setShowColorPicker(!showColorPicker);
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
               }}
             >
               🎨
@@ -167,8 +199,19 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
                   value={topColor || '#3b82f6'}
                   onChange={(e) => {
                     const value = e.target.value;
-                    if (value.match(/^#[0-9A-Fa-f]{6}$/)) {
-                      onColorChange(value);
+                    if (value.match(/^#[0-9A-Fa-f]{0,6}$/)) {
+                      if (value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                        onColorChange(value);
+                      } else if (value.length === 0 || value === '#') {
+                        // Permitir borrar o empezar a escribir
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // Si el valor no es válido al perder el foco, restaurar el color anterior
+                    const value = e.target.value;
+                    if (!value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                      e.target.value = topColor || '#3b82f6';
                     }
                   }}
                   className="color-text-input"
@@ -177,6 +220,7 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
+                    e.preventDefault();
                     setShowColorPicker(false);
                   }} 
                   className="close-picker-btn"
@@ -191,11 +235,14 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
                 ref={titleInputRef}
                 type="text"
                 value={title || ''}
-                onChange={(e) => onTitleChange(e.target.value)}
+                onChange={(e) => {
+                  onTitleChange(e.target.value);
+                }}
                 onBlur={handleTitleBlur}
                 onKeyDown={handleTitleKeyDown}
                 className="editable-title-input"
                 placeholder="Título"
+                autoFocus
               />
             ) : (
               <h2 
@@ -215,30 +262,58 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
             className="color-picker-trigger" 
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               setShowColorPicker(!showColorPicker);
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
             }}
           >
             🎨
           </div>
           {showColorPicker && (
-            <div className="color-picker-popup" onClick={(e) => e.stopPropagation()}>
+            <div ref={colorPickerRef} className="color-picker-popup" onClick={(e) => e.stopPropagation()}>
               <input
                 type="color"
-                value={topColor}
+                value={topColor || '#3b82f6'}
                 onChange={(e) => {
-                  onColorChange(e.target.value);
-                  setShowColorPicker(false);
+                  const newColor = e.target.value;
+                  onColorChange(newColor);
                 }}
                 className="color-picker-input"
               />
               <input
                 type="text"
-                value={topColor}
-                onChange={(e) => onColorChange(e.target.value)}
+                value={topColor || '#3b82f6'}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.match(/^#[0-9A-Fa-f]{0,6}$/)) {
+                    if (value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                      onColorChange(value);
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  // Si el valor no es válido al perder el foco, restaurar el color anterior
+                  const value = e.target.value;
+                  if (!value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                    e.target.value = topColor || '#3b82f6';
+                  }
+                }}
                 className="color-text-input"
                 placeholder="#3b82f6"
               />
-              <button onClick={() => setShowColorPicker(false)} className="close-picker-btn">✓</button>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setShowColorPicker(false);
+                }} 
+                className="close-picker-btn"
+              >
+                ✓
+              </button>
             </div>
           )}
           
@@ -247,11 +322,14 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
               ref={titleInputRef}
               type="text"
               value={title || ''}
-              onChange={(e) => onTitleChange(e.target.value)}
+              onChange={(e) => {
+                onTitleChange(e.target.value);
+              }}
               onBlur={handleTitleBlur}
               onKeyDown={handleTitleKeyDown}
               className="editable-title-input-empty"
               placeholder="Título (click para editar)"
+              autoFocus
             />
           ) : (
             <h2 

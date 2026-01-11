@@ -39,6 +39,8 @@
   gap: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
+  justify-items: center;
 }
 
 .training-card-section {
@@ -149,6 +151,13 @@
 @media (max-width: 1024px) {
   .training-layout {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .training-card-section,
+  .training-timer-section {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -157,16 +166,31 @@
     padding: 1rem;
   }
   
+  .training-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
   .training-header h1 {
     font-size: 1.5rem;
   }
   
+  .training-layout {
+    gap: 1rem;
+  }
+  
   .complete-modal {
-    padding: 2rem;
+    padding: 1.5rem;
+    margin: 1rem;
   }
   
   .complete-actions {
     flex-direction: column;
+  }
+  
+  .save-session-btn,
+  .cancel-btn {
+    width: 100%;
   }
 }
 

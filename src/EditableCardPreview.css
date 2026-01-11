@@ -396,3 +396,34 @@
   border-color: #2563eb;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+  .editable-card-preview {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .card-preview-header,
+  .card-preview-header-empty {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .card-preview-title {
+    font-size: 1rem;
+  }
+  
+  .card-preview-subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .card-preview-item {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.5rem;
+  }
+  
+  .color-picker-popup {
+    min-width: 180px;
+    padding: 0.75rem;
+  }
+}
+

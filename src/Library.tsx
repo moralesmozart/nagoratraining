@@ -4,6 +4,8 @@ import TrainingHistory from './TrainingHistory';
 import type { CardData, TrainingSession } from './types';
 import './Library.css';
 
+const nagoraLogo = `${import.meta.env.BASE_URL}nagora-logo.png`;
+
 interface LibraryProps {
   cards: CardData[];
   sessions: TrainingSession[];
@@ -34,7 +36,7 @@ const Library: React.FC<LibraryProps> = ({
       <div className="library-mirror-background"></div>
       <div className="library-content">
         <div className="library-header">
-          <img src="/nagora-logo.png" alt="Nagora" className="nagora-logo" />
+          <img src={nagoraLogo} alt="Nagora" className="nagora-logo" />
           <h1 className="library-title">Nāgora</h1>
         </div>
         

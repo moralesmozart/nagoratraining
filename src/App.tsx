@@ -7,6 +7,8 @@ import ActiveTraining from './ActiveTraining'
 import type { CardData, TrainingSession, Exercise } from './types'
 import './App.css'
 
+const nagoraLogo = `${import.meta.env.BASE_URL}nagora-logo.png`;
+
 function App() {
   const [currentView, setCurrentView] = useState<'editor' | 'library' | 'preparation' | 'training'>('library');
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
@@ -200,7 +202,7 @@ function App() {
     <div className="app-container">
       <div className="app-header">
         <div className="app-header-brand">
-          <img src="/nagora-logo.png" alt="Nagora" className="app-logo" />
+          <img src={nagoraLogo} alt="Nagora" className="app-logo" />
           <h1>Editor de Tarjetas</h1>
         </div>
         <button 

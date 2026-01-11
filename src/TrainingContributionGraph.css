@@ -42,6 +42,7 @@
   margin-left: 2rem;
   margin-bottom: 0.5rem;
   height: 20px;
+  position: relative;
 }
 
 .month-label {
@@ -49,6 +50,7 @@
   color: rgba(255, 255, 255, 0.7);
   text-align: left;
   padding-left: 2px;
+  white-space: nowrap;
 }
 
 .graph-content {

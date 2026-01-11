@@ -111,18 +111,26 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
   // Obtener qué meses mostrar
   const visibleMonths = useMemo(() => {
     const months: { month: string; weekIndex: number }[] = [];
-    let lastMonth = -1;
+    const monthPositions: { [key: number]: boolean } = {};
 
     weeks.forEach((week, weekIndex) => {
       if (week.length > 0) {
+        // Verificar si el primer día de la semana es el primer día del mes
+        // o si es la primera semana que contiene días de ese mes
         const firstDay = week[0].date;
         const month = firstDay.getMonth();
-        if (month !== lastMonth) {
+        
+        // Mostrar el mes si:
+        // 1. Es el primer día del mes (día 1)
+        // 2. O si es la primera semana que contiene ese mes y no hemos mostrado ese mes aún
+        const isFirstDayOfMonth = firstDay.getDate() <= 7;
+        
+        if (isFirstDayOfMonth && !monthPositions[weekIndex]) {
           months.push({
             month: monthNames[month],
             weekIndex,
           });
-          lastMonth = month;
+          monthPositions[weekIndex] = true;
         }
       }
     });
@@ -165,7 +173,11 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
               <div
                 key={`${month}-${weekIndex}`}
                 className="month-label"
-                style={{ gridColumn: weekIndex + 1 }}
+                style={{ 
+                  gridColumn: weekIndex + 1,
+                  textAlign: 'left',
+                  paddingLeft: '2px'
+                }}
               >
                 {month}
               </div>
@@ -249,7 +261,7 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
                   })}
                 </div>
                 <div className="activity-text">
-                  Completaste el entrenamiento <strong>{activity.cardName}</strong> en <strong>{activity.timeStr}</strong>
+                  Mozart hizo un entrenamiento <strong>{activity.cardName}</strong> en <strong>{activity.timeStr}</strong>
                 </div>
               </div>
             ))}

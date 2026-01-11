@@ -1,0 +1,198 @@
+/* Contenedor principal del flip card */
+.flip-card-hover {
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  height: 350px;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+  margin: 0 auto;
+  transform-style: preserve-3d;
+  /* Asegurar que el contenedor no se mueva */
+  display: inline-block;
+  vertical-align: top;
+}
+
+.flip-card-hover .flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.flip-card-hover .flip-card-inner.flipped,
+.flip-card-hover.flipped .flip-card-inner {
+  transform: rotateY(180deg) !important;
+}
+
+/* Caras del flip card */
+.flip-card-hover .flip-card-front,
+.flip-card-hover .flip-card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 350px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background: linear-gradient(to bottom, #faf9f6 0%, #f5f4f1 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.flip-card-hover .flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Header con color */
+.flip-card-hover .exercise-card-header {
+  padding: 0.75rem 1rem;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.flip-card-hover .exercise-card-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: 'Arial Black', 'Arial Bold', sans-serif;
+}
+
+/* Línea divisoria */
+.flip-card-hover .exercise-card-divider {
+  height: 2px;
+  background-color: #1a1a1a;
+  width: 100%;
+}
+
+/* Contenido */
+.flip-card-hover .exercise-card-content {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 3.5rem; /* Espacio para el icono */
+}
+
+.flip-card-hover .exercise-card-subtitle {
+  font-size: 0.9rem;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Lista de ejercicios */
+.flip-card-hover .exercise-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.flip-card-hover .exercise-card-item {
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #1a1a1a;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-left: 2px solid #3b82f6;
+}
+
+/* Indicador de flip - emoji 🔄, aparece en hover, en la parte inferior */
+.flip-card-hover .flip-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.flip-card-hover .flip-indicator.visible {
+  opacity: 1;
+}
+
+.flip-card-hover .flip-icon {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  animation: pulse-icon-hover 2s ease-in-out infinite;
+  user-select: none;
+}
+
+.flip-card-hover .flip-icon:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 1);
+}
+
+@keyframes pulse-icon-hover {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+/* Asegurar que las caras tengan position relative para el indicador */
+.flip-card-hover .flip-card-front,
+.flip-card-hover .flip-card-back {
+  position: relative;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .flip-card-hover {
+    max-width: 100%;
+    width: 100%;
+    height: 320px;
+  }
+  
+  .flip-card-hover .exercise-card-title {
+    font-size: 1.1rem;
+  }
+  
+  .flip-card-hover .exercise-card-content {
+    padding: 0.75rem;
+  }
+}
+

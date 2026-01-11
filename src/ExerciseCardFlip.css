@@ -1,0 +1,175 @@
+/* Contenedor principal del flip card */
+.flip-card {
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  min-height: 350px;
+  height: 350px;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+  margin: 0 auto;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg) !important;
+}
+
+/* Caras del flip card */
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background: linear-gradient(to bottom, #faf9f6 0%, #f5f4f1 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Header con color */
+.flip-card .exercise-card-header {
+  padding: 0.75rem 1rem;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.flip-card .exercise-card-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: 'Arial Black', 'Arial Bold', sans-serif;
+}
+
+/* Línea divisoria */
+.flip-card .exercise-card-divider {
+  height: 2px;
+  background-color: #1a1a1a;
+  width: 100%;
+}
+
+/* Contenido */
+.flip-card .exercise-card-content {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.flip-card .exercise-card-subtitle {
+  font-size: 0.9rem;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Lista de ejercicios */
+.flip-card .exercise-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.flip-card .exercise-card-item {
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #1a1a1a;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-left: 2px solid #3b82f6;
+}
+
+/* Indicador de flip */
+.flip-indicator {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.flip-arrow {
+  font-size: 1.5rem;
+  color: #3b82f6;
+  animation: pulse-arrow 2s ease-in-out infinite;
+}
+
+.flip-text {
+  font-size: 0.65rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+@keyframes pulse-arrow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .flip-card {
+    max-width: 100%;
+    height: 320px;
+  }
+  
+  .flip-card .exercise-card-title {
+    font-size: 1.1rem;
+  }
+  
+  .flip-card .exercise-card-content {
+    padding: 0.75rem;
+  }
+}
+

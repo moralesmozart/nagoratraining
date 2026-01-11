@@ -21,7 +21,7 @@ const ActiveTraining: React.FC<ActiveTrainingProps> = ({
     const saved = sessionStorage.getItem('trainingWeights');
     return saved ? JSON.parse(saved) : {};
   });
-  const [timerConfig, setTimerConfig] = useState<TimerConfig>(() => {
+  const [timerConfig] = useState<TimerConfig>(() => {
     const saved = sessionStorage.getItem('trainingTimerConfig');
     return saved ? JSON.parse(saved) : {
       prepTime: 5,

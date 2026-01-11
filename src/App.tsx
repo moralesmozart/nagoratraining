@@ -4,7 +4,7 @@ import ExerciseCardFlipWood from './ExerciseCardFlipWood'
 import Library from './Library'
 import TrainingPreparation from './TrainingPreparation'
 import ActiveTraining from './ActiveTraining'
-import type { CardData, TrainingSession } from './types'
+import type { CardData, TrainingSession, Exercise } from './types'
 import './App.css'
 
 function App() {
@@ -44,7 +44,7 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const updateFront = (field: keyof CardData['front'], value: string | string[]) => {
+  const updateFront = (field: keyof CardData['front'], value: string | string[] | Exercise[]) => {
     setCardData(prev => ({
       ...prev,
       front: {
@@ -54,7 +54,7 @@ function App() {
     }));
   };
 
-  const updateBack = (field: keyof CardData['back'], value: string | string[]) => {
+  const updateBack = (field: keyof CardData['back'], value: string | string[] | Exercise[]) => {
     setCardData(prev => ({
       ...prev,
       back: {
@@ -147,7 +147,7 @@ function App() {
     setCurrentView('preparation');
   };
 
-  const handleStartTraining = (weights: { [key: number]: number }, timerConfig: any) => {
+  const handleStartTraining = (_weights: { [key: number]: number }, _timerConfig: any) => {
     setCurrentView('training');
     // Los datos se pasarán al componente ActiveTraining
   };

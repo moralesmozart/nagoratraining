@@ -17,7 +17,7 @@ interface EditableCardPreviewProps {
   onExerciseAdd: () => void;
   onExerciseRemove: (index: number) => void;
   onColorChange: (color: string) => void;
-  side: 'front' | 'back';
+  side?: 'front' | 'back';
 }
 
 const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
@@ -31,7 +31,6 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
   onExerciseAdd,
   onExerciseRemove,
   onColorChange,
-  side,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
@@ -117,19 +116,19 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
     }, 100);
   };
 
-  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+  const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
   };
 
-  const handleSubtitleKeyDown = (e: React.KeyboardEvent) => {
+  const handleSubtitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
   };
 
-  const handleExerciseKeyDown = (e: React.KeyboardEvent, index: number) => {
+  const handleExerciseKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur();
     }
@@ -300,7 +299,7 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
                 {isEditingExercise === index ? (
                   <div className="exercise-edit-row">
                     <input
-                      ref={(el) => exerciseInputRefs.current[index] = el}
+                      ref={(el) => { exerciseInputRefs.current[index] = el; }}
                       type="text"
                       value={exercise.name}
                       onChange={(e) => onExerciseChange(index, 'name', e.target.value)}
@@ -311,7 +310,7 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
                           const repsInput = e.currentTarget.parentElement?.querySelector('.editable-repetitions-input') as HTMLInputElement;
                           repsInput?.focus();
                         } else {
-                          handleExerciseKeyDown(e, index);
+                          handleExerciseKeyDown(e);
                         }
                       }}
                       className="editable-exercise-input"
@@ -328,7 +327,7 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
                           const nameInput = e.currentTarget.parentElement?.querySelector('.editable-exercise-input') as HTMLInputElement;
                           nameInput?.focus();
                         } else {
-                          handleExerciseKeyDown(e, index);
+                          handleExerciseKeyDown(e);
                         }
                       }}
                       className="editable-repetitions-input"

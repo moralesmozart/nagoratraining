@@ -222,7 +222,7 @@ const ExerciseCardWithWeights: React.FC<ExerciseCardWithWeightsProps> = ({
                       <div className="exercise-weight-container">
                         {isEditingWeight === index ? (
                           <input
-                            ref={(el) => weightInputRefs.current[index] = el}
+                            ref={(el) => { weightInputRefs.current[index] = el; }}
                             type="number"
                             defaultValue={weights[index] || ''}
                             onBlur={(e) => handleWeightBlur(index, e.target.value)}
@@ -317,7 +317,7 @@ const ExerciseCardWithWeights: React.FC<ExerciseCardWithWeightsProps> = ({
                           <div className="exercise-weight-container">
                             {isEditingWeight === exerciseIndex ? (
                               <input
-                                ref={(el) => weightInputRefs.current[exerciseIndex] = el}
+                                ref={(el) => { weightInputRefs.current[exerciseIndex] = el; }}
                                 type="number"
                                 defaultValue={weights[exerciseIndex] || ''}
                                 onBlur={(e) => handleWeightBlur(exerciseIndex, e.target.value)}

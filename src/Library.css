@@ -1,0 +1,183 @@
+.library-container {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.library-mirror-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    /* Efecto espejo con gradientes */
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0.1) 100%
+    ),
+    /* Reflejos horizontales */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.03) 4px
+    ),
+    /* Reflejos verticales */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 2px,
+      rgba(255, 255, 255, 0.02) 4px
+    ),
+    /* Base con gradiente espejo */
+    linear-gradient(
+      180deg,
+      #1a1a2e 0%,
+      #16213e 25%,
+      #0f3460 50%,
+      #16213e 75%,
+      #1a1a2e 100%
+    );
+  
+  background-size: 
+    100% 100%,
+    100% 8px,
+    8px 100%,
+    100% 100%;
+  
+  /* Efecto de brillo espejo */
+  box-shadow: 
+    inset 0 0 200px rgba(255, 255, 255, 0.1),
+    inset 0 0 100px rgba(255, 255, 255, 0.05);
+  
+  /* Animación sutil */
+  animation: mirror-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes mirror-shimmer {
+  0%, 100% {
+    background-position: 
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
+  }
+  50% {
+    background-position: 
+      0% 0%,
+      0% 4px,
+      4px 0%,
+      0% 0%;
+  }
+}
+
+.library-content {
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.library-title {
+  font-size: 3rem;
+  color: white;
+  text-align: center;
+  margin-bottom: 3rem;
+  text-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.5),
+    0 0 20px rgba(255, 255, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.library-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 2rem;
+}
+
+.empty-message {
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.create-card-button {
+  padding: 1.2rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 
+    0 4px 15px rgba(102, 126, 234, 0.4),
+    0 0 20px rgba(102, 126, 234, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.create-card-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 6px 25px rgba(102, 126, 234, 0.5),
+    0 0 30px rgba(102, 126, 234, 0.3);
+}
+
+.create-card-button:active {
+  transform: translateY(-1px);
+}
+
+.library-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.library-card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .library-content {
+    padding: 1rem;
+  }
+  
+  .library-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .library-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1rem 0;
+  }
+  
+  .empty-message {
+    font-size: 1.2rem;
+  }
+  
+  .create-card-button {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+}
+

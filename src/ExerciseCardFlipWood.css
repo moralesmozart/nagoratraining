@@ -1,0 +1,263 @@
+/* Contenedor principal del flip card - igual que Current Version */
+.flip-card-wood {
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  min-height: 350px;
+  height: 350px;
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+  margin: 0 auto;
+  transform-style: preserve-3d;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.flip-card-wood .flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.flip-card-wood.flipped .flip-card-inner {
+  transform: rotateY(180deg) !important;
+}
+
+/* Caras del flip card - igual que Current Version pero con efecto madera */
+.flip-card-wood .flip-card-front,
+.flip-card-wood .flip-card-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 350px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  
+  /* Efecto de textura de madera - agregado encima del fondo blanco */
+  background: 
+    /* Grano de madera con gradientes */
+    repeating-linear-gradient(
+      90deg,
+      rgba(139, 90, 43, 0.1) 0px,
+      rgba(160, 120, 60, 0.05) 1px,
+      rgba(139, 90, 43, 0.1) 2px,
+      rgba(120, 80, 40, 0.08) 3px,
+      rgba(139, 90, 43, 0.1) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(120, 80, 40, 0.05) 0px,
+      rgba(160, 120, 60, 0.03) 1px,
+      rgba(139, 90, 43, 0.05) 2px,
+      rgba(120, 80, 40, 0.03) 3px
+    ),
+    /* Base de color madera */
+    linear-gradient(
+      135deg,
+      #d4a574 0%,
+      #c9a068 25%,
+      #d4a574 50%,
+      #c9a068 75%,
+      #d4a574 100%
+    );
+  
+  /* Patrón de vetas de madera */
+  background-size: 
+    4px 100%,
+    100% 8px,
+    100% 100%;
+}
+
+/* Capa adicional para profundidad de madera */
+.flip-card-wood .flip-card-front::before,
+.flip-card-wood .flip-card-back::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    /* Vetas más oscuras */
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(101, 67, 33, 0.15) 10%,
+      transparent 20%,
+      rgba(101, 67, 33, 0.1) 30%,
+      transparent 40%,
+      rgba(101, 67, 33, 0.12) 50%,
+      transparent 60%,
+      rgba(101, 67, 33, 0.1) 70%,
+      transparent 80%,
+      rgba(101, 67, 33, 0.15) 90%,
+      transparent 100%
+    ),
+    /* Textura de grano */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(101, 67, 33, 0.03) 2px,
+      rgba(101, 67, 33, 0.03) 4px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.flip-card-wood .flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Header con color - mantener por encima del efecto madera */
+.flip-card-wood .exercise-card-header {
+  padding: 0.75rem 1rem;
+  color: white;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Si no hay título, ajustar el contenido */
+.flip-card-wood .flip-card-front:not(:has(.exercise-card-header)) .exercise-card-content,
+.flip-card-wood .flip-card-back:not(:has(.exercise-card-header)) .exercise-card-content {
+  padding-top: 1.5rem;
+}
+
+.flip-card-wood .exercise-card-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: 'Arial Black', 'Arial Bold', sans-serif;
+}
+
+/* Línea divisoria */
+.flip-card-wood .exercise-card-divider {
+  height: 2px;
+  background-color: #1a1a1a;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Contenido - mantener por encima del efecto madera */
+.flip-card-wood .exercise-card-content {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.flip-card-wood .exercise-card-subtitle {
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Lista de ejercicios */
+.flip-card-wood .exercise-card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.flip-card-wood .exercise-card-item {
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #1a1a1a;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-left: 2px solid #3b82f6;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Indicador de flip */
+.flip-card-wood .flip-indicator {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.flip-card-wood .flip-arrow {
+  font-size: 1.5rem;
+  color: #3b82f6;
+  animation: pulse-arrow-wood 2s ease-in-out infinite;
+}
+
+.flip-card-wood .flip-text {
+  font-size: 0.65rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+@keyframes pulse-arrow-wood {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .flip-card-wood {
+    max-width: 100%;
+    height: 320px;
+  }
+  
+  .flip-card-wood .exercise-card-title {
+    font-size: 1.1rem;
+  }
+  
+  .flip-card-wood .exercise-card-content {
+    padding: 0.75rem;
+  }
+}
+

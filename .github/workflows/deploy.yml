@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - training-card-editor
   workflow_dispatch:
 
 permissions:

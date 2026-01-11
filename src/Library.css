@@ -82,6 +82,10 @@
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .library-header {
@@ -197,6 +201,8 @@
   padding: 2rem 0;
   justify-items: center;
   width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .library-card-wrapper {

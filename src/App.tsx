@@ -43,7 +43,15 @@ function App() {
 
   const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>(() => {
     const saved = localStorage.getItem('trainingSessions');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      const sessions = JSON.parse(saved);
+      // Parsear fechas que vienen como strings desde localStorage
+      return sessions.map((session: TrainingSession) => ({
+        ...session,
+        date: session.date instanceof Date ? session.date : new Date(session.date),
+      }));
+    }
+    return [];
   });
 
   const updateFront = (field: keyof CardData['front'], value: string | string[] | Exercise[]) => {

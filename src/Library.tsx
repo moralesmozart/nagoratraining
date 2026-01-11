@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import ExerciseCardFlipWood from './ExerciseCardFlipWood';
 import TrainingHistory from './TrainingHistory';
+import TrainingContributionGraph from './TrainingContributionGraph';
 import type { CardData, TrainingSession } from './types';
 import './Library.css';
 
@@ -30,6 +31,14 @@ const Library: React.FC<LibraryProps> = ({
   const closeHistory = () => {
     setHistoryCardId(null);
   };
+
+  // Parsear fechas de las sesiones (pueden venir como strings desde localStorage)
+  const parsedSessions = useMemo(() => {
+    return sessions.map(session => ({
+      ...session,
+      date: session.date instanceof Date ? session.date : new Date(session.date),
+    }));
+  }, [sessions]);
 
   return (
     <div className="library-container">
@@ -104,6 +113,14 @@ const Library: React.FC<LibraryProps> = ({
               );
             })}
           </div>
+        )}
+
+        {/* Gráfico de contribuciones */}
+        {parsedSessions.length > 0 && (
+          <TrainingContributionGraph 
+            sessions={parsedSessions}
+            cards={cards}
+          />
         )}
       </div>
 

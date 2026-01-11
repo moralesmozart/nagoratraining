@@ -1,0 +1,13 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Top Bar -->
+  <rect x="20" y="15" width="80" height="14" rx="7" fill="white"/>
+  
+  <!-- Main Angular Shape (stylized A) -->
+  <!-- Left line -->
+  <path d="M 30 29 L 30 95 L 50 95 L 50 80 L 70 80 L 70 95 L 90 95 L 90 29 L 75 29 L 60 65 L 45 29 Z" 
+        fill="white"/>
+  
+  <!-- Inner opening (transparent triangle) -->
+  <path d="M 50 55 L 60 75 L 70 55 Z" 
+        fill="none"/>
+</svg>

@@ -1,38 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ExerciseCardFlipWood from './ExerciseCardFlipWood';
+import TrainingHistory from './TrainingHistory';
+import type { CardData, TrainingSession } from './types';
 import './Library.css';
-
-interface Exercise {
-  name: string;
-  repetitions?: string;
-}
-
-interface CardData {
-  front: {
-    color: string;
-    title: string;
-    subtitle: string;
-    exercises: Exercise[];
-  };
-  back: {
-    color: string;
-    title: string;
-    subtitle: string;
-    exercises: Exercise[];
-  };
-}
 
 interface LibraryProps {
   cards: CardData[];
+  sessions: TrainingSession[];
   onCreateCard: () => void;
+  onPickTraining: (card: CardData) => void;
+  getSessionCount: (cardId: string) => number;
 }
 
-const Library: React.FC<LibraryProps> = ({ cards, onCreateCard }) => {
+const Library: React.FC<LibraryProps> = ({ 
+  cards, 
+  sessions,
+  onCreateCard, 
+  onPickTraining,
+  getSessionCount 
+}) => {
+  const [historyCardId, setHistoryCardId] = useState<string | null>(null);
+
+  const openHistory = (cardId: string) => {
+    setHistoryCardId(cardId);
+  };
+
+  const closeHistory = () => {
+    setHistoryCardId(null);
+  };
+
   return (
     <div className="library-container">
       <div className="library-mirror-background"></div>
       <div className="library-content">
-        <h1 className="library-title">Biblioteca de Entrenamientos</h1>
+        <div className="library-header">
+          <img src="/nagora-logo.png" alt="Nagora" className="nagora-logo" />
+          <h1 className="library-title">Nāgora</h1>
+        </div>
+        
+        <div className="library-actions-top">
+          <button onClick={onCreateCard} className="create-card-button-top">
+            ➕ Crear Nuevo Entrenamiento
+          </button>
+        </div>
         
         {cards.length === 0 ? (
           <div className="library-empty">
@@ -43,28 +53,77 @@ const Library: React.FC<LibraryProps> = ({ cards, onCreateCard }) => {
           </div>
         ) : (
           <div className="library-cards-grid">
-            {cards.map((card, index) => (
-              <div key={index} className="library-card-wrapper">
-                <ExerciseCardFlipWood
-                  title={card.front.title || 'Sin título'}
-                  subtitle={card.front.subtitle || ''}
-                  exercises={card.front.exercises
-                    .filter(e => e.name.trim() !== '')
-                    .map(e => e.repetitions ? `${e.name} (${e.repetitions})` : e.name)}
-                  backSubtitle={card.back.subtitle || undefined}
-                  backExercises={card.back.exercises
-                    .filter(e => e.name.trim() !== '')
-                    .map(e => e.repetitions ? `${e.name} (${e.repetitions})` : e.name)}
-                  topColor={card.front.color}
-                  intensity={0.3}
-                  perspective={1000}
-                  showFlipIndicator={false}
-                />
-              </div>
-            ))}
+            {cards.map((card) => {
+              const cardId = card.id || `card-${cards.indexOf(card)}`;
+              const sessionCount = getSessionCount(cardId);
+
+              return (
+                <div key={cardId} className="library-card-wrapper">
+                  <div className="library-card-container">
+                    <ExerciseCardFlipWood
+                      title={card.front.title || 'Sin título'}
+                      subtitle={card.front.subtitle || ''}
+                      exercises={card.front.exercises
+                        .filter(e => e.name.trim() !== '')
+                        .map(e => e.repetitions ? `${e.name} (${e.repetitions})` : e.name)}
+                      backSubtitle={card.back.subtitle || undefined}
+                      backExercises={card.back.exercises
+                        .filter(e => e.name.trim() !== '')
+                        .map(e => e.repetitions ? `${e.name} (${e.repetitions})` : e.name)}
+                      topColor={card.front.color}
+                      intensity={0.3}
+                      perspective={1000}
+                      showFlipIndicator={false}
+                    />
+                    
+                    <div className="library-card-actions">
+                      {sessionCount > 0 && (
+                        <div className="session-badge">
+                          {sessionCount} {sessionCount === 1 ? 'sesión' : 'sesiones'}
+                        </div>
+                      )}
+                      <button 
+                        onClick={() => onPickTraining(card)}
+                        className="start-training-btn"
+                      >
+                        Iniciar Entrenamiento
+                      </button>
+                      {sessionCount > 0 && (
+                        <button 
+                          onClick={() => openHistory(cardId)}
+                          className="view-history-btn"
+                        >
+                          Ver Historial
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* Modal de Historial */}
+      {historyCardId && (() => {
+        const selectedCard = cards.find(c => (c.id || `card-${cards.indexOf(c)}`) === historyCardId);
+        const cardSessions = sessions.filter(s => s.cardId === historyCardId);
+        if (!selectedCard || cardSessions.length === 0) return null;
+        
+        return (
+          <div className="history-modal-overlay" onClick={closeHistory}>
+            <div className="history-modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="history-modal-close" onClick={closeHistory}>✕</button>
+              <h2 className="history-modal-title">Historial de Entrenamientos</h2>
+              <TrainingHistory 
+                sessions={cardSessions}
+                card={selectedCard}
+              />
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

@@ -47,7 +47,7 @@
 
 .editable-title-input-empty:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #737f4c;
   background: rgba(255, 255, 255, 0.2);
 }
 
@@ -107,7 +107,7 @@
 
 .close-picker-btn {
   padding: 0.5rem;
-  background: #667eea;
+  background: #737f4c;
   color: white;
   border: none;
   border-radius: 6px;
@@ -116,7 +116,7 @@
 }
 
 .close-picker-btn:hover {
-  background: #5568d3;
+  background: #5a6840;
 }
 
 .card-preview-title {
@@ -213,7 +213,7 @@
 .editable-subtitle-input {
   width: 100%;
   background: white;
-  border: 2px solid #667eea;
+  border: 2px solid #737f4c;
   border-radius: 4px;
   padding: 0.5rem;
   color: #333;
@@ -287,7 +287,7 @@
 .editable-exercise-input {
   flex: 1;
   background: white;
-  border: 2px solid #667eea;
+  border: 2px solid #737f4c;
   border-radius: 4px;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
@@ -304,7 +304,7 @@
 .editable-repetitions-input {
   width: 60px;
   background: white;
-  border: 2px solid #667eea;
+  border: 2px solid #737f4c;
   border-radius: 4px;
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
@@ -349,7 +349,7 @@
 }
 
 .editable-repetitions-placeholder:hover {
-  border-color: #667eea;
+  border-color: #737f4c;
   color: #667eea;
 }
 

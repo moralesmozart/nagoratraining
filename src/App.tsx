@@ -2,30 +2,14 @@ import { useState } from 'react'
 import EditableCardPreview from './EditableCardPreview'
 import ExerciseCardFlipWood from './ExerciseCardFlipWood'
 import Library from './Library'
+import TrainingPreparation from './TrainingPreparation'
+import ActiveTraining from './ActiveTraining'
+import type { CardData, TrainingSession } from './types'
 import './App.css'
 
-interface Exercise {
-  name: string;
-  repetitions?: string;
-}
-
-interface CardData {
-  front: {
-    color: string;
-    title: string;
-    subtitle: string;
-    exercises: Exercise[];
-  };
-  back: {
-    color: string;
-    title: string;
-    subtitle: string;
-    exercises: Exercise[];
-  };
-}
-
 function App() {
-  const [currentView, setCurrentView] = useState<'editor' | 'library'>('editor');
+  const [currentView, setCurrentView] = useState<'editor' | 'library' | 'preparation' | 'training'>('library');
+  const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
   const [cardData, setCardData] = useState<CardData>({
     front: {
       color: '#3b82f6',
@@ -44,6 +28,19 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [savedCards, setSavedCards] = useState<CardData[]>(() => {
     const saved = localStorage.getItem('trainingCards');
+    if (saved) {
+      const cards = JSON.parse(saved);
+      // Asegurar que cada tarjeta tenga un ID
+      return cards.map((card: CardData, index: number) => ({
+        ...card,
+        id: card.id || `card-${Date.now()}-${index}`,
+      }));
+    }
+    return [];
+  });
+
+  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>(() => {
+    const saved = localStorage.getItem('trainingSessions');
     return saved ? JSON.parse(saved) : [];
   });
 
@@ -119,7 +116,11 @@ function App() {
   };
 
   const handleSendToLibrary = () => {
-    const newCards = [...savedCards, cardData];
+    const cardWithId = {
+      ...cardData,
+      id: cardData.id || `card-${Date.now()}`,
+    };
+    const newCards = [...savedCards, cardWithId];
     setSavedCards(newCards);
     localStorage.setItem('trainingCards', JSON.stringify(newCards));
     setShowModal(false);
@@ -141,11 +142,56 @@ function App() {
     alert('Tarjeta guardada en la biblioteca!');
   };
 
+  const handlePickTraining = (card: CardData) => {
+    setSelectedCard(card);
+    setCurrentView('preparation');
+  };
+
+  const handleStartTraining = (weights: { [key: number]: number }, timerConfig: any) => {
+    setCurrentView('training');
+    // Los datos se pasarán al componente ActiveTraining
+  };
+
+  const handleSaveSession = (session: TrainingSession) => {
+    const newSessions = [...trainingSessions, session];
+    setTrainingSessions(newSessions);
+    localStorage.setItem('trainingSessions', JSON.stringify(newSessions));
+    setCurrentView('library');
+    setSelectedCard(null);
+  };
+
+  const getSessionCount = (cardId: string) => {
+    return trainingSessions.filter(s => s.cardId === cardId).length;
+  };
+
   if (currentView === 'library') {
     return (
       <Library 
-        cards={savedCards} 
+        cards={savedCards}
+        sessions={trainingSessions}
         onCreateCard={() => setCurrentView('editor')}
+        onPickTraining={handlePickTraining}
+        getSessionCount={getSessionCount}
+      />
+    );
+  }
+
+  if (currentView === 'preparation' && selectedCard) {
+    return (
+      <TrainingPreparation
+        card={selectedCard}
+        onStartTraining={handleStartTraining}
+        onBack={() => setCurrentView('library')}
+      />
+    );
+  }
+
+  if (currentView === 'training' && selectedCard) {
+    return (
+      <ActiveTraining
+        card={selectedCard}
+        onComplete={handleSaveSession}
+        onCancel={() => setCurrentView('library')}
       />
     );
   }
@@ -153,12 +199,15 @@ function App() {
   return (
     <div className="app-container">
       <div className="app-header">
-        <h1>Editor de Tarjetas de Entrenamiento</h1>
+        <div className="app-header-brand">
+          <img src="/nagora-logo.png" alt="Nagora" className="app-logo" />
+          <h1>Editor de Tarjetas</h1>
+        </div>
         <button 
           onClick={() => setCurrentView('library')}
           className="library-button"
         >
-          📚 Biblioteca
+          🏠 Nagora
         </button>
       </div>
       <p className="subtitle">Haz clic en cualquier elemento de la tarjeta para editarlo</p>

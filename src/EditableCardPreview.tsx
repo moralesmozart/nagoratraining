@@ -40,6 +40,7 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
   const titleInputRef = useRef<HTMLInputElement>(null);
   const subtitleInputRef = useRef<HTMLInputElement>(null);
   const exerciseInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isEditingTitle && titleInputRef.current) {
@@ -61,6 +62,27 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
       exerciseInputRefs.current[isEditingExercise]?.select();
     }
   }, [isEditingExercise]);
+
+  // Cerrar el color picker cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(event.target as Node)) {
+        const target = event.target as HTMLElement;
+        // No cerrar si se hace clic en el trigger del color picker
+        if (!target.closest('.color-picker-trigger')) {
+          setShowColorPicker(false);
+        }
+      }
+    };
+
+    if (showColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showColorPicker]);
 
   const handleTitleClick = () => {
     setIsEditingTitle(true);
@@ -119,30 +141,49 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
         <>
           <div 
             className="card-preview-header"
-            style={{ backgroundColor: topColor }}
+            style={{ backgroundColor: topColor || '#3b82f6' }}
           >
-            <div className="color-picker-trigger" onClick={() => setShowColorPicker(!showColorPicker)}>
+            <div 
+              className="color-picker-trigger" 
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowColorPicker(!showColorPicker);
+              }}
+            >
               🎨
             </div>
             {showColorPicker && (
-              <div className="color-picker-popup" onClick={(e) => e.stopPropagation()}>
+              <div ref={colorPickerRef} className="color-picker-popup" onClick={(e) => e.stopPropagation()}>
                 <input
                   type="color"
-                  value={topColor}
+                  value={topColor || '#3b82f6'}
                   onChange={(e) => {
-                    onColorChange(e.target.value);
-                    setShowColorPicker(false);
+                    const newColor = e.target.value;
+                    onColorChange(newColor);
                   }}
                   className="color-picker-input"
                 />
                 <input
                   type="text"
-                  value={topColor}
-                  onChange={(e) => onColorChange(e.target.value)}
+                  value={topColor || '#3b82f6'}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.match(/^#[0-9A-Fa-f]{6}$/)) {
+                      onColorChange(value);
+                    }
+                  }}
                   className="color-text-input"
                   placeholder="#3b82f6"
                 />
-                <button onClick={() => setShowColorPicker(false)} className="close-picker-btn">✓</button>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowColorPicker(false);
+                  }} 
+                  className="close-picker-btn"
+                >
+                  ✓
+                </button>
               </div>
             )}
             
@@ -171,7 +212,13 @@ const EditableCardPreview: React.FC<EditableCardPreviewProps> = ({
         </>
       ) : (
         <div className="card-preview-header-empty">
-          <div className="color-picker-trigger" onClick={() => setShowColorPicker(!showColorPicker)}>
+          <div 
+            className="color-picker-trigger" 
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowColorPicker(!showColorPicker);
+            }}
+          >
             🎨
           </div>
           {showColorPicker && (

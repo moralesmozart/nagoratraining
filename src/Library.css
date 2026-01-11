@@ -352,6 +352,18 @@
     padding: 1rem 0;
   }
   
+  .library-card-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .create-card-button-top {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+  
   .empty-message {
     font-size: 1.2rem;
   }

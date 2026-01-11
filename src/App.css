@@ -227,13 +227,35 @@
     padding: 1rem;
   }
   
+  .app-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .app-header-brand {
+    flex-direction: column;
+    align-items: center;
+  }
+  
   .app-container h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   
   .preview-section-main {
     flex-direction: column;
+    align-items: center;
     gap: 2rem;
+  }
+  
+  .preview-card-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+    padding: 0 1rem;
   }
 
   .modal-overlay {
@@ -242,10 +264,16 @@
 
   .modal-content {
     padding: 1.5rem;
+    margin: 1rem;
   }
 
   .modal-title {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
+  }
+  
+  .library-button {
+    width: 100%;
+    max-width: 200px;
   }
 }

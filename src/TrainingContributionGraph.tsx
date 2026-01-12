@@ -68,25 +68,26 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
     return weeksArray;
   }, [allDays]);
 
-  // Calcular qué meses mostrar (solo cuando el primer día de la semana es del 1 al 7)
+  // Calcular qué meses mostrar - mostrar en la primera semana que contiene días de ese mes
   const monthLabels = useMemo(() => {
     const labels: { month: string; weekIndex: number }[] = [];
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-    let lastMonth = -1;
+    const seenMonths = new Set<number>();
 
     weeks.forEach((week, weekIndex) => {
       if (week.length > 0) {
-        const firstDay = week[0].date;
-        const month = firstDay.getMonth();
-        const dayOfMonth = firstDay.getDate();
-        
-        // Mostrar el mes si es diferente al anterior y el día es 1-7
-        if (month !== lastMonth && dayOfMonth <= 7) {
-          labels.push({
-            month: monthNames[month],
-            weekIndex,
-          });
-          lastMonth = month;
+        // Verificar todos los días de la semana para encontrar el primer mes que aparece
+        for (const day of week) {
+          const month = day.date.getMonth();
+          if (!seenMonths.has(month)) {
+            // Este es el primer mes que encontramos en esta semana
+            labels.push({
+              month: monthNames[month],
+              weekIndex,
+            });
+            seenMonths.add(month);
+            break; // Solo agregar un mes por semana
+          }
         }
       }
     });

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import type { TrainingSession, CardData } from './types';
 import './TrainingContributionGraph.css';
 

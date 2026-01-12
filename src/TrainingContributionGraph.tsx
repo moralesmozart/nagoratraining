@@ -227,3 +227,4 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
 };
 
 export default TrainingContributionGraph;
+

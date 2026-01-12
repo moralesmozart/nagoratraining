@@ -1,7 +1,7 @@
 .contribution-graph-container {
   width: 100%;
   max-width: 1000px;
-  margin: 3rem auto 0;
+  margin: 0 auto;
   padding: 2rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
@@ -16,7 +16,6 @@
 .contribution-summary {
   font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.9);
-  text-align: left;
 }
 
 .contribution-summary strong {
@@ -29,30 +28,23 @@
   position: relative;
 }
 
-.contribution-graph {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-/* Contenedor de meses con espaciado para alinear con días de la semana */
-.graph-months-container {
+/* Fila de meses */
+.months-row {
   display: flex;
   margin-bottom: 0.5rem;
 }
 
-.graph-months-spacer {
+.days-label-spacer {
   width: 2rem;
   flex-shrink: 0;
 }
 
-.graph-months {
+.months-grid {
   display: grid;
   grid-template-columns: repeat(53, 1fr);
   gap: 2px;
   flex: 1;
   height: 20px;
-  position: relative;
 }
 
 .month-label {
@@ -61,18 +53,16 @@
   text-align: left;
   padding-left: 2px;
   white-space: nowrap;
-  grid-row: 1;
 }
 
-/* Contenido del gráfico */
-.graph-content {
+/* Gráfico principal */
+.graph-main {
   display: flex;
   gap: 2px;
-  align-items: flex-start;
 }
 
-/* Etiquetas de días de la semana */
-.graph-days-labels {
+/* Etiquetas de días */
+.days-labels {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -89,74 +79,65 @@
   line-height: 11px;
 }
 
-.day-label-empty {
-  height: 11px;
-}
-
-/* Grid de cuadrados de contribución */
-.graph-squares {
+/* Contenedor de cuadrados */
+.squares-container {
   display: flex;
   gap: 2px;
   flex: 1;
-  min-width: 0;
 }
 
 .week-column {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  flex-shrink: 0;
   width: 11px;
+  flex-shrink: 0;
 }
 
-.contribution-square {
+.square {
   width: 11px;
   height: 11px;
   border-radius: 2px;
   cursor: pointer;
   transition: all 0.2s;
-  position: relative;
   flex-shrink: 0;
 }
 
-.contribution-square:hover {
+.square:hover {
   outline: 1px solid rgba(255, 255, 255, 0.5);
   transform: scale(1.2);
   z-index: 10;
 }
 
-/* Niveles de intensidad - Colores Nagora */
-.contribution-square.intensity-0 {
+/* Intensidades */
+.square.intensity-0 {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.contribution-square.intensity-1 {
+.square.intensity-1 {
   background: rgba(115, 127, 76, 0.3);
 }
 
-.contribution-square.intensity-2 {
+.square.intensity-2 {
   background: rgba(115, 127, 76, 0.5);
 }
 
-.contribution-square.intensity-3 {
+.square.intensity-3 {
   background: rgba(115, 127, 76, 0.7);
 }
 
-.contribution-square.intensity-4 {
+.square.intensity-4 {
   background: #737f4c;
 }
 
 /* Leyenda */
-.graph-legend {
+.legend {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
   margin-left: 2rem;
-}
-
-.legend-label {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
 }
@@ -193,35 +174,6 @@
   background: #737f4c;
 }
 
-/* Tooltip */
-.contribution-tooltip {
-  position: fixed;
-  pointer-events: none;
-  z-index: 1000;
-  transform: translate(-50%, -100%);
-  margin-top: -8px;
-}
-
-.tooltip-content {
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(115, 127, 76, 0.5);
-}
-
-.tooltip-count {
-  text-align: center;
-}
-
-.tooltip-count strong {
-  color: #737f4c;
-  font-weight: 600;
-}
-
 /* Actividades recientes */
 .recent-activities {
   margin-top: 3rem;
@@ -229,7 +181,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.activities-title {
+.recent-activities h3 {
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 1.5rem;
@@ -292,11 +244,11 @@
     font-size: 1.2rem;
   }
 
-  .graph-months-spacer {
+  .days-label-spacer {
     width: 1.5rem;
   }
 
-  .graph-months {
+  .months-grid {
     grid-template-columns: repeat(53, 8px);
   }
 
@@ -304,7 +256,7 @@
     font-size: 0.65rem;
   }
 
-  .graph-days-labels {
+  .days-labels {
     width: 1.5rem;
   }
 
@@ -316,7 +268,7 @@
     width: 9px;
   }
 
-  .contribution-square {
+  .square {
     width: 9px;
     height: 9px;
   }

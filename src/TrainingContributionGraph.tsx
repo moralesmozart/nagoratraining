@@ -14,31 +14,32 @@ interface DayData {
 }
 
 const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ sessions, cards }) => {
-  const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
-  const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null);
-
-  // Generar datos para el último año (53 semanas completas)
-  const contributionData = useMemo(() => {
+  // Calcular el lunes de hace 53 semanas
+  const getStartDate = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    // Calcular el lunes de hace 53 semanas
+    // Ir 53 semanas atrás
     const weeksAgo = 53;
-    const oneYearAgo = new Date(today);
-    oneYearAgo.setDate(today.getDate() - (weeksAgo * 7));
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - (weeksAgo * 7));
     
-    // Ir al lunes de esa semana
-    const dayOfWeek = oneYearAgo.getDay();
+    // Ir al lunes de esa semana (0 = domingo, 1 = lunes, etc.)
+    const dayOfWeek = startDate.getDay();
     const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    oneYearAgo.setDate(oneYearAgo.getDate() - daysToMonday);
-    oneYearAgo.setHours(0, 0, 0, 0);
+    startDate.setDate(startDate.getDate() - daysToMonday);
+    startDate.setHours(0, 0, 0, 0);
+    
+    return startDate;
+  };
 
+  // Generar todos los días (53 semanas x 7 días = 371 días)
+  const allDays = useMemo(() => {
+    const startDate = getStartDate();
     const days: DayData[] = [];
-    const currentDate = new Date(oneYearAgo);
+    const currentDate = new Date(startDate);
 
-    // Generar exactamente 53 semanas (371 días)
-    const totalDays = 53 * 7;
-    for (let i = 0; i < totalDays; i++) {
+    for (let i = 0; i < 53 * 7; i++) {
       const dateStr = currentDate.toISOString().split('T')[0];
       const daySessions = sessions.filter(s => {
         const sessionDate = s.date instanceof Date ? s.date : new Date(s.date);
@@ -58,28 +59,45 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
     return days;
   }, [sessions]);
 
-  // Agrupar por semanas (53 semanas, cada una con 7 días)
+  // Organizar en semanas (53 semanas, cada una con 7 días)
   const weeks = useMemo(() => {
     const weeksArray: DayData[][] = [];
-    
     for (let i = 0; i < 53; i++) {
-      const weekStart = i * 7;
-      const week = contributionData.slice(weekStart, weekStart + 7);
-      weeksArray.push(week);
+      weeksArray.push(allDays.slice(i * 7, (i + 1) * 7));
     }
-
     return weeksArray;
-  }, [contributionData]);
+  }, [allDays]);
 
-  // Calcular total de contribuciones
-  const totalContributions = useMemo(() => {
-    return sessions.length;
-  }, [sessions]);
+  // Calcular qué meses mostrar (solo cuando el primer día de la semana es del 1 al 7)
+  const monthLabels = useMemo(() => {
+    const labels: { month: string; weekIndex: number }[] = [];
+    const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    let lastMonth = -1;
 
-  // Obtener el nivel de intensidad del color basado en el conteo
-  const getIntensityLevel = (count: number, maxCount: number): number => {
+    weeks.forEach((week, weekIndex) => {
+      if (week.length > 0) {
+        const firstDay = week[0].date;
+        const month = firstDay.getMonth();
+        const dayOfMonth = firstDay.getDate();
+        
+        // Mostrar el mes si es diferente al anterior y el día es 1-7
+        if (month !== lastMonth && dayOfMonth <= 7) {
+          labels.push({
+            month: monthNames[month],
+            weekIndex,
+          });
+          lastMonth = month;
+        }
+      }
+    });
+
+    return labels;
+  }, [weeks]);
+
+  // Calcular intensidad de color
+  const maxCount = Math.max(...allDays.map(d => d.count), 1);
+  const getIntensity = (count: number): number => {
     if (count === 0) return 0;
-    if (maxCount === 0) return 0;
     const ratio = count / maxCount;
     if (ratio >= 0.75) return 4;
     if (ratio >= 0.5) return 3;
@@ -87,9 +105,7 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
     return 1;
   };
 
-  const maxCount = Math.max(...contributionData.map(d => d.count), 1);
-
-  // Obtener las últimas actividades (últimas 10 sesiones)
+  // Actividades recientes
   const recentActivities = useMemo(() => {
     return sessions
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -104,54 +120,9 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
           ? `${timeInMinutes}m ${timeInSeconds}s`
           : `${timeInSeconds}s`;
 
-        return {
-          session,
-          cardName,
-          date,
-          timeStr,
-        };
+        return { session, cardName, date, timeStr };
       });
   }, [sessions, cards]);
-
-  // Nombres de los meses
-  const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-
-  // Obtener qué meses mostrar - solo mostrar cuando el primer día de la semana es del mes
-  const visibleMonths = useMemo(() => {
-    const months: { month: string; weekIndex: number }[] = [];
-    let lastMonth = -1;
-
-    weeks.forEach((week, weekIndex) => {
-      if (week.length > 0) {
-        const firstDay = week[0].date;
-        const month = firstDay.getMonth();
-        
-        // Mostrar el mes solo si es diferente al anterior y el día es 1-7 (primera semana del mes)
-        if (month !== lastMonth && firstDay.getDate() <= 7) {
-          months.push({
-            month: monthNames[month],
-            weekIndex,
-          });
-          lastMonth = month;
-        }
-      }
-    });
-
-    return months;
-  }, [weeks]);
-
-  const handleDayMouseEnter = (day: DayData, event: React.MouseEvent) => {
-    setHoveredDay(day);
-    setHoverPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
-  };
-
-  const handleDayMouseLeave = () => {
-    setHoveredDay(null);
-    setHoverPosition(null);
-  };
 
   const formatDate = (date: Date): string => {
     const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
@@ -164,101 +135,75 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
     <div className="contribution-graph-container">
       <div className="contribution-graph-header">
         <div className="contribution-summary">
-          <strong>{totalContributions}</strong> {totalContributions === 1 ? 'entrenamiento' : 'entrenamientos'} en el último año
+          <strong>{sessions.length}</strong> {sessions.length === 1 ? 'entrenamiento' : 'entrenamientos'} en el último año
         </div>
       </div>
 
       <div className="contribution-graph-wrapper">
-        <div className="contribution-graph">
-          {/* Meses - alineados con las columnas de semanas */}
-          <div className="graph-months-container">
-            <div className="graph-months-spacer"></div>
-            <div className="graph-months">
-              {visibleMonths.map(({ month, weekIndex }) => (
-                <div
-                  key={`${month}-${weekIndex}`}
-                  className="month-label"
-                  style={{ 
-                    gridColumn: weekIndex + 1,
-                  }}
-                >
-                  {month}
-                </div>
-              ))}
-            </div>
+        {/* Meses */}
+        <div className="months-row">
+          <div className="days-label-spacer"></div>
+          <div className="months-grid">
+            {monthLabels.map(({ month, weekIndex }) => (
+              <div
+                key={`${month}-${weekIndex}`}
+                className="month-label"
+                style={{ gridColumnStart: weekIndex + 1 }}
+              >
+                {month}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Gráfico principal */}
+        <div className="graph-main">
+          {/* Etiquetas de días */}
+          <div className="days-labels">
+            <div className="day-label">Lun</div>
+            <div className="day-label">Mar</div>
+            <div className="day-label">Mié</div>
+            <div className="day-label">Jue</div>
+            <div className="day-label">Vie</div>
+            <div className="day-label">Sáb</div>
+            <div className="day-label">Dom</div>
           </div>
 
-          {/* Contenido del gráfico */}
-          <div className="graph-content">
-            {/* Etiquetas de días de la semana */}
-            <div className="graph-days-labels">
-              <span className="day-label">Lun</span>
-              <span className="day-label-empty"></span>
-              <span className="day-label">Mié</span>
-              <span className="day-label-empty"></span>
-              <span className="day-label">Vie</span>
-              <span className="day-label-empty"></span>
-              <span className="day-label-empty"></span>
-            </div>
-
-            {/* Grid de cuadrados */}
-            <div className="graph-squares">
-              {weeks.map((week, weekIndex) => (
-                <div key={weekIndex} className="week-column">
-                  {week.map((day, dayIndex) => {
-                    const intensity = getIntensityLevel(day.count, maxCount);
-                    return (
-                      <div
-                        key={`${weekIndex}-${dayIndex}`}
-                        className={`contribution-square intensity-${intensity}`}
-                        onMouseEnter={(e) => handleDayMouseEnter(day, e)}
-                        onMouseLeave={handleDayMouseLeave}
-                        data-count={day.count}
-                        title={`${day.count} ${day.count === 1 ? 'entrenamiento' : 'entrenamientos'}`}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
+          {/* Cuadrados de contribución */}
+          <div className="squares-container">
+            {weeks.map((week, weekIndex) => (
+              <div key={weekIndex} className="week-column">
+                {week.map((day, dayIndex) => {
+                  const intensity = getIntensity(day.count);
+                  return (
+                    <div
+                      key={`${weekIndex}-${dayIndex}`}
+                      className={`square intensity-${intensity}`}
+                      title={`${day.count} ${day.count === 1 ? 'entrenamiento' : 'entrenamientos'} - ${formatDate(day.date)}`}
+                    />
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Leyenda */}
-        <div className="graph-legend">
-          <span className="legend-label">Menos</span>
+        <div className="legend">
+          <span>Menos</span>
           <div className="legend-squares">
-            <div className="legend-square intensity-0"></div>
-            <div className="legend-square intensity-1"></div>
-            <div className="legend-square intensity-2"></div>
-            <div className="legend-square intensity-3"></div>
-            <div className="legend-square intensity-4"></div>
+            {[0, 1, 2, 3, 4].map(level => (
+              <div key={level} className={`legend-square intensity-${level}`}></div>
+            ))}
           </div>
-          <span className="legend-label">Más</span>
+          <span>Más</span>
         </div>
       </div>
-
-      {/* Tooltip al hacer hover */}
-      {hoveredDay && hoverPosition && (
-        <div
-          className="contribution-tooltip"
-          style={{
-            left: `${hoverPosition.x}px`,
-            top: `${hoverPosition.y - 10}px`,
-          }}
-        >
-          <div className="tooltip-content">
-            <div className="tooltip-count">
-              <strong>{hoveredDay.count}</strong> {hoveredDay.count === 1 ? 'entrenamiento' : 'entrenamientos'} el {formatDate(hoveredDay.date)}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Actividades recientes */}
       {recentActivities.length > 0 && (
         <div className="recent-activities">
-          <h3 className="activities-title">Actividad reciente</h3>
+          <h3>Actividad reciente</h3>
           <div className="activities-list">
             {recentActivities.map((activity, index) => (
               <div key={activity.session.id || index} className="activity-item">

@@ -58,6 +58,7 @@
   gap: 1rem;
   width: 100%;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .timer-btn {
@@ -111,6 +112,16 @@
 .reset-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 25px rgba(239, 68, 68, 0.4);
+}
+
+.finish-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.finish-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
 }
 
 .timer-progress {

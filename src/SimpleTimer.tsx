@@ -85,13 +85,18 @@ const SimpleTimer: React.FC<SimpleTimerProps> = ({ initialTime, type, onComplete
             ▶ Iniciar
           </button>
         ) : (
-          <button onClick={handlePause} className="timer-btn pause-btn">
-            {isPaused ? '▶ Reanudar' : '⏸ Pausar'}
-          </button>
+          <>
+            <button onClick={handlePause} className="timer-btn pause-btn">
+              {isPaused ? '▶ Reanudar' : '⏸ Pausar'}
+            </button>
+            <button onClick={handleReset} className="timer-btn reset-btn">
+              ↻ Reiniciar
+            </button>
+            <button onClick={() => onComplete?.()} className="timer-btn finish-btn">
+              ✓ Finalizar Entrenamiento
+            </button>
+          </>
         )}
-        <button onClick={handleReset} className="timer-btn reset-btn">
-          ↻ Reiniciar
-        </button>
       </div>
     </div>
   );

@@ -204,6 +204,9 @@ const TabataTimer: React.FC<TabataTimerProps> = ({
             <button onClick={handleReset} className="timer-btn reset-btn">
               ↻ Reiniciar
             </button>
+            <button onClick={onComplete} className="timer-btn finish-btn">
+              ✓ Finalizar Entrenamiento
+            </button>
           </>
         ) : (
           <>
@@ -212,6 +215,9 @@ const TabataTimer: React.FC<TabataTimerProps> = ({
             </button>
             <button onClick={handleReset} className="timer-btn reset-btn">
               ↻ Reiniciar
+            </button>
+            <button onClick={onComplete} className="timer-btn finish-btn">
+              ✓ Finalizar Entrenamiento
             </button>
           </>
         )}

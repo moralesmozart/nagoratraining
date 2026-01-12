@@ -11,6 +11,51 @@
   text-align: center;
 }
 
+.timer-type-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.timer-type-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.75rem 1rem;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  background: white;
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.timer-type-btn:hover {
+  border-color: #737f4c;
+  color: #737f4c;
+}
+
+.timer-type-btn.active {
+  background: #737f4c;
+  color: white;
+  border-color: #737f4c;
+}
+
+.timer-config-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.config-help {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}
+
 .timer-config-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

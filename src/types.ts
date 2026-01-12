@@ -19,12 +19,17 @@ export interface CardData {
   };
 }
 
+export type TimerType = 'tabata' | 'normal' | 'reverse';
+
 export interface TimerConfig {
+  type: TimerType;
   prepTime: number;
   workTime: number;
   restTime: number;
   rounds: number;
   restBetweenExercises: number;
+  // Para contadores normales/reverse
+  initialTime?: number; // tiempo inicial en segundos (solo para normal/reverse)
 }
 
 export interface ExerciseWithWeight extends Exercise {

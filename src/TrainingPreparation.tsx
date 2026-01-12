@@ -18,11 +18,13 @@ const TrainingPreparation: React.FC<TrainingPreparationProps> = ({
   const [weights, setWeights] = useState<{ [key: number]: number }>({});
   const [showTimerConfig, setShowTimerConfig] = useState(false);
   const [timerConfig, setTimerConfig] = useState<TimerConfigType>({
+    type: 'tabata',
     prepTime: 5,
     workTime: 20,
     restTime: 10,
     rounds: 1,
     restBetweenExercises: 10,
+    initialTime: 0,
   });
 
   const handleWeightChange = (exerciseIndex: number, weight: number) => {

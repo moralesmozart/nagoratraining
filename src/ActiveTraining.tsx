@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ExerciseCardWithWeights from './ExerciseCardWithWeights';
 import TabataTimer from './TabataTimer';
+import SimpleTimer from './SimpleTimer';
 import Confetti from './Confetti';
 import type { CardData, TrainingSession, TimerConfig } from './types';
 import './ActiveTraining.css';
@@ -24,11 +25,13 @@ const ActiveTraining: React.FC<ActiveTrainingProps> = ({
   const [timerConfig] = useState<TimerConfig>(() => {
     const saved = sessionStorage.getItem('trainingTimerConfig');
     return saved ? JSON.parse(saved) : {
+      type: 'tabata',
       prepTime: 5,
       workTime: 20,
       restTime: 10,
       rounds: 1,
       restBetweenExercises: 10,
+      initialTime: 0,
     };
   });
   const [startTime] = useState(Date.now());
@@ -111,17 +114,25 @@ const ActiveTraining: React.FC<ActiveTrainingProps> = ({
         </div>
 
         <div className="training-timer-section">
-          <TabataTimer
-            exercises={allExercises}
-            timerConfig={timerConfig}
-            onExerciseComplete={(index) => {
-              handleExerciseComplete(index);
-              setCurrentExercise(index);
-            }}
-            onComplete={handleTimerComplete}
-            currentExercise={currentExercise}
-            onExerciseChange={setCurrentExercise}
-          />
+          {timerConfig.type === 'tabata' ? (
+            <TabataTimer
+              exercises={allExercises}
+              timerConfig={timerConfig}
+              onExerciseComplete={(index) => {
+                handleExerciseComplete(index);
+                setCurrentExercise(index);
+              }}
+              onComplete={handleTimerComplete}
+              currentExercise={currentExercise}
+              onExerciseChange={setCurrentExercise}
+            />
+          ) : (
+            <SimpleTimer
+              initialTime={timerConfig.initialTime || 0}
+              type={timerConfig.type}
+              onComplete={handleTimerComplete}
+            />
+          )}
         </div>
       </div>
 

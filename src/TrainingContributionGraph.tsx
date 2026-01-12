@@ -17,21 +17,32 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
   const [hoveredDay, setHoveredDay] = useState<DayData | null>(null);
   const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null);
 
-  // Generar datos para el último año
+  // Generar datos para el último año (53 semanas completas)
   const contributionData = useMemo(() => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Calcular el lunes de hace 53 semanas
+    const weeksAgo = 53;
     const oneYearAgo = new Date(today);
-    oneYearAgo.setFullYear(today.getFullYear() - 1);
-    oneYearAgo.setDate(oneYearAgo.getDate() - (oneYearAgo.getDay() || 7) + 1); // Lunes de la semana
+    oneYearAgo.setDate(today.getDate() - (weeksAgo * 7));
+    
+    // Ir al lunes de esa semana
+    const dayOfWeek = oneYearAgo.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    oneYearAgo.setDate(oneYearAgo.getDate() - daysToMonday);
+    oneYearAgo.setHours(0, 0, 0, 0);
 
     const days: DayData[] = [];
     const currentDate = new Date(oneYearAgo);
 
-    // Generar todos los días del último año (53 semanas)
-    while (currentDate <= today) {
+    // Generar exactamente 53 semanas (371 días)
+    const totalDays = 53 * 7;
+    for (let i = 0; i < totalDays; i++) {
       const dateStr = currentDate.toISOString().split('T')[0];
       const daySessions = sessions.filter(s => {
-        const sessionDate = new Date(s.date);
+        const sessionDate = s.date instanceof Date ? s.date : new Date(s.date);
+        sessionDate.setHours(0, 0, 0, 0);
         return sessionDate.toISOString().split('T')[0] === dateStr;
       });
 
@@ -47,18 +58,15 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
     return days;
   }, [sessions]);
 
-  // Agrupar por semanas (53 semanas)
+  // Agrupar por semanas (53 semanas, cada una con 7 días)
   const weeks = useMemo(() => {
     const weeksArray: DayData[][] = [];
-    let currentWeek: DayData[] = [];
-
-    contributionData.forEach((day, index) => {
-      currentWeek.push(day);
-      if (currentWeek.length === 7 || index === contributionData.length - 1) {
-        weeksArray.push([...currentWeek]);
-        currentWeek = [];
-      }
-    });
+    
+    for (let i = 0; i < 53; i++) {
+      const weekStart = i * 7;
+      const week = contributionData.slice(weekStart, weekStart + 7);
+      weeksArray.push(week);
+    }
 
     return weeksArray;
   }, [contributionData]);
@@ -108,29 +116,23 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
   // Nombres de los meses
   const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-  // Obtener qué meses mostrar
+  // Obtener qué meses mostrar - solo mostrar cuando el primer día de la semana es del mes
   const visibleMonths = useMemo(() => {
     const months: { month: string; weekIndex: number }[] = [];
-    const monthPositions: { [key: number]: boolean } = {};
+    let lastMonth = -1;
 
     weeks.forEach((week, weekIndex) => {
       if (week.length > 0) {
-        // Verificar si el primer día de la semana es el primer día del mes
-        // o si es la primera semana que contiene días de ese mes
         const firstDay = week[0].date;
         const month = firstDay.getMonth();
         
-        // Mostrar el mes si:
-        // 1. Es el primer día del mes (día 1)
-        // 2. O si es la primera semana que contiene ese mes y no hemos mostrado ese mes aún
-        const isFirstDayOfMonth = firstDay.getDate() <= 7;
-        
-        if (isFirstDayOfMonth && !monthPositions[weekIndex]) {
+        // Mostrar el mes solo si es diferente al anterior y el día es 1-7 (primera semana del mes)
+        if (month !== lastMonth && firstDay.getDate() <= 7) {
           months.push({
             month: monthNames[month],
             weekIndex,
           });
-          monthPositions[weekIndex] = true;
+          lastMonth = month;
         }
       }
     });
@@ -168,33 +170,38 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
 
       <div className="contribution-graph-wrapper">
         <div className="contribution-graph">
-          <div className="graph-months">
-            {visibleMonths.map(({ month, weekIndex }) => (
-              <div
-                key={`${month}-${weekIndex}`}
-                className="month-label"
-                style={{ 
-                  gridColumn: weekIndex + 1,
-                  textAlign: 'left',
-                  paddingLeft: '2px'
-                }}
-              >
-                {month}
-              </div>
-            ))}
+          {/* Meses - alineados con las columnas de semanas */}
+          <div className="graph-months-container">
+            <div className="graph-months-spacer"></div>
+            <div className="graph-months">
+              {visibleMonths.map(({ month, weekIndex }) => (
+                <div
+                  key={`${month}-${weekIndex}`}
+                  className="month-label"
+                  style={{ 
+                    gridColumn: weekIndex + 1,
+                  }}
+                >
+                  {month}
+                </div>
+              ))}
+            </div>
           </div>
 
+          {/* Contenido del gráfico */}
           <div className="graph-content">
+            {/* Etiquetas de días de la semana */}
             <div className="graph-days-labels">
-              <span>Lun</span>
-              <span></span>
-              <span>Mié</span>
-              <span></span>
-              <span>Vie</span>
-              <span></span>
-              <span></span>
+              <span className="day-label">Lun</span>
+              <span className="day-label-empty"></span>
+              <span className="day-label">Mié</span>
+              <span className="day-label-empty"></span>
+              <span className="day-label">Vie</span>
+              <span className="day-label-empty"></span>
+              <span className="day-label-empty"></span>
             </div>
 
+            {/* Grid de cuadrados */}
             <div className="graph-squares">
               {weeks.map((week, weekIndex) => (
                 <div key={weekIndex} className="week-column">
@@ -207,6 +214,7 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
                         onMouseEnter={(e) => handleDayMouseEnter(day, e)}
                         onMouseLeave={handleDayMouseLeave}
                         data-count={day.count}
+                        title={`${day.count} ${day.count === 1 ? 'entrenamiento' : 'entrenamientos'}`}
                       />
                     );
                   })}
@@ -216,6 +224,7 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
           </div>
         </div>
 
+        {/* Leyenda */}
         <div className="graph-legend">
           <span className="legend-label">Menos</span>
           <div className="legend-squares">
@@ -273,4 +282,3 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
 };
 
 export default TrainingContributionGraph;
-

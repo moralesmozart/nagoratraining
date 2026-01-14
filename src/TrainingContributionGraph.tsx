@@ -76,18 +76,17 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
 
     weeks.forEach((week, weekIndex) => {
       if (week.length > 0) {
-        // Verificar todos los días de la semana para encontrar el primer mes que aparece
-        for (const day of week) {
-          const month = day.date.getMonth();
-          if (!seenMonths.has(month)) {
-            // Este es el primer mes que encontramos en esta semana
-            labels.push({
-              month: monthNames[month],
-              weekIndex,
-            });
-            seenMonths.add(month);
-            break; // Solo agregar un mes por semana
-          }
+        // Buscar el primer día de la semana que pertenece a un mes que no hemos visto
+        const firstDay = week[0].date;
+        const month = firstDay.getMonth();
+        
+        if (!seenMonths.has(month)) {
+          // Este es el primer mes que encontramos en esta semana
+          labels.push({
+            month: monthNames[month],
+            weekIndex,
+          });
+          seenMonths.add(month);
         }
       }
     });

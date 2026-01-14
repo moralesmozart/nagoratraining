@@ -94,8 +94,12 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
         const firstDay = week[0].date;
         const month = firstDay.getMonth();
         
-        if (!seenMonths.has(month)) {
-          // Este es el primer mes que encontramos en esta semana
+        // Mostrar el mes si no lo hemos visto antes
+        // O si el primer día del mes (día 1) está en esta semana
+        const dayOfMonth = firstDay.getDate();
+        const shouldShow = !seenMonths.has(month) || dayOfMonth <= 7;
+        
+        if (shouldShow && !seenMonths.has(month)) {
           labels.push({
             month: monthNames[month],
             weekIndex,

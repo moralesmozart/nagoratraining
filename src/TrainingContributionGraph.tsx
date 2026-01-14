@@ -42,9 +42,23 @@ const TrainingContributionGraph: React.FC<TrainingContributionGraphProps> = ({ s
     for (let i = 0; i < 53 * 7; i++) {
       const dateStr = currentDate.toISOString().split('T')[0];
       const daySessions = sessions.filter(s => {
-        const sessionDate = s.date instanceof Date ? s.date : new Date(s.date);
+        let sessionDate: Date;
+        if (s.date instanceof Date) {
+          sessionDate = new Date(s.date);
+        } else if (typeof s.date === 'string') {
+          sessionDate = new Date(s.date);
+        } else {
+          // Si viene como objeto serializado desde localStorage
+          sessionDate = new Date(s.date);
+        }
+        
+        if (isNaN(sessionDate.getTime())) {
+          return false; // Fecha inválida, saltar
+        }
+        
         sessionDate.setHours(0, 0, 0, 0);
-        return sessionDate.toISOString().split('T')[0] === dateStr;
+        const sessionDateStr = sessionDate.toISOString().split('T')[0];
+        return sessionDateStr === dateStr;
       });
 
       days.push({
